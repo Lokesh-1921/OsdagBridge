@@ -31,11 +31,32 @@ def resolve_girder_value(source: dict, base_key: str, i: int = 0) -> Any:
     raise KeyError(base_key)
 
 
+def _end_diaphragm_weight(outputs: dict) -> str:
+    """Nominal steel mass for both support frames, using designed kg/m values."""
+    frames = outputs.get("end_diaphragm_member_lengths") or {}
+    if not frames:
+        return "N.A."
+
+    mass_kg = 0.0
+    for pair, members in frames.items():
+        for mass_key, length_m in members.items():
+            prefix, suffix = mass_key.rsplit(".", 1)
+            try:
+                mass_per_m = float(outputs[f"{prefix}.{pair}.{suffix}"])
+            except (KeyError, TypeError, ValueError):
+                return "N.A."
+            if not math.isfinite(mass_per_m) or mass_per_m <= 0 or length_m <= 0:
+                return "N.A."
+            mass_kg += mass_per_m * length_m
+    return f"{2 * mass_kg / 1000:.2f}"
+
+
 def calculate_material_quantities(inputs: dict, outputs: dict) -> dict:
     """Calculate quantities (steel tonnage, concrete volume, rebar, studs)
     needed for the material take-off summary (Chapter 7).
     """
     quantities = {
+        "steel_end_diaphragm_wt_total": _end_diaphragm_weight(outputs),
         "steel_girders_vol_formula": r"\placeholder{Area $\times$ Length}",
         "steel_girders_qty": "N.A.",
         "steel_girders_vol_total": "N.A.",

@@ -2670,6 +2670,7 @@ class PlateGirderBridge:
 
         # 5. Process design results and queries
         forces_dict = {"pairs": {}}
+        member_lengths = {}
         pair_designs = {}
         for pair in pairs:
             pair_designs[pair] = {}
@@ -2703,6 +2704,12 @@ class PlateGirderBridge:
                 horiz_proj = s if bracing_type in ("X", "X-Bracing") else s / 2.0
                 L_d = math.sqrt(horiz_proj ** 2 + h ** 2)
                 cos_alpha = math.cos(math.atan2(h, horiz_proj))
+                # Nominal centreline lengths in metres for one support frame.
+                member_lengths[pair_id] = {
+                    KEY_TD_ED_PROP_M: 2 * L_d,
+                    **({KEY_TD_ED_TOP_CHORD_PROP_M: s} if top_chord_enabled else {}),
+                    **({KEY_TD_ED_BOTTOM_CHORD_PROP_M: s} if bottom_chord_enabled else {}),
+                }
 
                 # Collect envelope forces over both ends and all load cases
                 elements = pair_to_elements.get(pair, [])
@@ -2924,6 +2931,7 @@ class PlateGirderBridge:
 
             # -- CASE B: ROLLED BEAM DIAPHRAGM --
             elif ed_type == "Rolled Beam":
+                member_lengths[pair_id] = {KEY_TD_ED_PROP_M: s}
                 is_sec_des = self.input_dict.get(f"{KEY_MP_ED_IS_SECTION}{member_suffix}")
                 if is_sec_des:
                     self.output_dict[make_pair_key(KEY_MP_ED_IS_SECTION, pair_id)] = is_sec_des
@@ -2947,6 +2955,7 @@ class PlateGirderBridge:
 
             # -- CASE C: WELDED BEAM DIAPHRAGM --
             elif ed_type == "Welded Beam":
+                member_lengths[pair_id] = {KEY_TD_ED_PROP_M: s}
                 depth = float(self.input_dict.get(f"{KEY_MP_ED_TOTAL_DEPTH}{member_suffix}") or 0.0)
                 web_t = float(self.input_dict.get(f"{KEY_MP_ED_WEB_THICKNESS}{member_suffix}") or 0.0)
                 top_w = float(self.input_dict.get(f"{KEY_MP_ED_TOP_FLANGE_WIDTH}{member_suffix}") or 0.0)
@@ -3009,6 +3018,7 @@ class PlateGirderBridge:
         if forces_dict.get("pairs"):
             self._print_enddiaphragm_design_results(forces_dict, pair_designs)
         
+        self.output_dict["end_diaphragm_member_lengths"] = member_lengths
         self.output_dict["end_diaphragm_forces_dict"] = forces_dict
         self.end_diaphragm_design_results = pair_designs
         return pair_designs

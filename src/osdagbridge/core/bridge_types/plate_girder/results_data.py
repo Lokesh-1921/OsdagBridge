@@ -14,8 +14,6 @@ from collections import OrderedDict
 from collections.abc import Mapping
 from pathlib import Path
 
-import openseespy.opensees as ops
-
 from .results_data_post_processing import post_process, FORCE_KEEP, DISP_KEEP
 
 
@@ -83,6 +81,8 @@ _TOOLS_DIR = Path(__file__).resolve().parents[5] / "tools"
 
 def _build_nodes_members() -> tuple[dict, dict]:
     """Read node coords and element connectivity from the live openseespy model."""
+    import openseespy.opensees as ops
+
     nodes = {
         int(n): list(map(float, ops.nodeCoord(n)))
         for n in ops.getNodeTags()

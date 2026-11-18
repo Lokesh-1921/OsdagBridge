@@ -41,6 +41,7 @@ def ch8_design_log(log_entries: List[str], input_dict: dict) -> str:
 def _ch8_assumptions(is_custom: bool) -> str:
     assumptions = [
         r"""
+\setcounter{chapter}{7}
 \chapter{Standards \& Assumptions}
 \label{ch:Design Standards}
 
@@ -53,16 +54,13 @@ design modules, and notes the limitations of the current software version.
 The following Indian Road Congress (IRC) codes and Indian Standards (IS) 
 form the basis of all design calculations in this software.
 
-\vspace{0.5cm}
+\ReportTableGap
 
 \begingroup
-\setlength{\tabcolsep}{3.5pt}
-\begin{table}[H]
-\caption{\textbf{IRC Codes}}
-\begin{tabular}{|c|c|p{13cm}|}
-\hline
-\textbf{Code} & \textbf{Year} & \textbf{Title / Scope} \\ 
-\hline
+\begin{longtable}{|L{2cm}|C{1.2cm}|L{13cm}|}
+\ReportTableHead{IRC Codes}{%
+\textbf{Code} & \textbf{Year} & \textbf{Title / Scope}%
+}
 IRC 5 & 2015 & General Features of Design - carriageway widths, kerb, footpath dimensions \\ 
 \hline
 IRC 6 & 2017 & Loads and Load Combinations - dead load, live load, impact, wind, temperature, etc. \\ 
@@ -75,17 +73,13 @@ IRC 112 & 2020 & Concrete Road Bridges - Deck slab flexure, shear, crack width, 
 \hline
 IRC SP 114 & 2018 & Seismic Design of Road Bridges \\ 
 \hline
-\end{tabular}
-\end{table}
+\end{longtable}
 
 \begingroup
-\setlength{\tabcolsep}{3.5pt}
-\begin{table}[H]
-\caption{\textbf{IS Codes}}
-\begin{tabular}{|c|c|p{13cm}|}
-\hline
-\textbf{Code} & \textbf{Year} & \textbf{Scope} \\
-\hline
+\begin{longtable}{|L{2cm}|C{1.2cm}|L{13cm}|}
+\ReportTableHead{IS Codes}{%
+\textbf{Code} & \textbf{Year} & \textbf{Scope}%
+}
 IS 800 & 2007 & Steel construction - tension, compression, bending, shear, LTB, stiffeners, combined checks \\
 \hline
 IS 456 & 2000 & Concrete - simplified stress-block for deck moment capacity \\
@@ -96,8 +90,7 @@ IS 1893 (Part 3) & 2014 & Earthquake resistant design \\
 \hline
 IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\
 \hline
-\end{tabular}
-\end{table}
+\end{longtable}
 
 \clearpage
 \section{Analysis and Design Assumptions of This Version}
