@@ -917,8 +917,8 @@ class TransverseMemberDesign(QDialog):
             ed_designs = getattr(backend, "end_diaphragm_design_results", {}) or {}
             od         = getattr(backend, "output_dict", {}) or {}
 
-            # Merge ED results into designs_dict and tag ed_type / ed_bracing_type
-            designs_dict: dict = dict(cb_designs)
+            # Keep the merged display metadata out of the backend design results.
+            designs_dict = {pair: dict(members) for pair, members in cb_designs.items()}
             for pair, ed_pair_data in ed_designs.items():
                 pair_id   = pair.replace("-", "")
                 ed_type  = od.get(f"member_properties.end_diaphragm_details.{pair_id}.type") or ""

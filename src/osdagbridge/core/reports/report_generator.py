@@ -274,10 +274,12 @@ class ReportDataBridge:
             forces = self._cb_forces_dict() or {}
         force_pairs = forces.get("pairs") or {}
         for pair, members in designs.items():
-            for member, force_results in members.items():
-                result = _extract_osdag_summary(force_results.get(force_type) or {})
-                prefix = "diag" if member == "diagonal" else member
-                pair_forces = force_pairs.get(pair, {})
+            pair_forces = force_pairs.get(pair, {})
+            for member, prefix in (("diagonal", "diag"), ("chord", "chord")):
+                force_results = (members.get(member) or {}).get(force_type)
+                if not force_results:
+                    continue
+                result = _extract_osdag_summary(force_results)
                 result["demand_kN"] = pair_forces.get(f"{prefix}_{force_type}_kN")
                 result["load_combination"] = pair_forces.get(f"{prefix}_{force_type}_gov_lc")
                 yield result
